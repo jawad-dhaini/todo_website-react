@@ -8,13 +8,14 @@ const {
   toggleComplete,
 } = require("../controllers/taskControllers");
 const router = express.Router();
+const isAuthorized = require("./auth");
 
 router.post("/register", register);
 router.post("/login", login);
-router.post("/tasks", getUserTasks);
-router.post("/addtask", addTask);
-router.post("/edittask", editTask);
-router.post("/deltask", delTask);
-router.post("/togglecomplete", toggleComplete);
+router.post("/tasks", isAuthorized, getUserTasks);
+router.post("/addtask", isAuthorized, addTask);
+router.post("/edittask", isAuthorized, editTask);
+router.post("/deltask", isAuthorized, delTask);
+router.post("/togglecomplete", isAuthorized, toggleComplete);
 
 module.exports = router;

@@ -14,38 +14,38 @@ async function sendPostRequest(path, body) {
   }
 }
 
-async function addTask(task, user_id) {
+async function addTask(task, token) {
   return await sendPostRequest("addtask", {
-    task_text: task,
-    user_id: user_id,
+    taskText: task,
+    accessToken: token,
   });
 }
 
-async function editTask(taskId, task, user_id) {
+async function editTask(taskId, task, token) {
   return await sendPostRequest("edittask", {
-    task_id: taskId,
-    task_text: task,
-    user_id: user_id,
+    taskId: taskId,
+    taskText: task,
+    accessToken: token,
   });
 }
 
-async function deleteTask(id, user_id) {
+async function deleteTask(id, token) {
   return await sendPostRequest("deltask", {
-    task_id: id,
-    user_id: user_id,
+    taskId: id,
+    accessToken: token,
   });
 }
 
-async function toggleComplete(id, is_completed, user_id) {
+async function toggleComplete(id, isCompleted, token) {
   return await sendPostRequest("togglecomplete", {
-    task_id: id,
-    user_id: user_id,
-    is_complete: is_completed,
+    taskId: id,
+    accessToken: token,
+    isComplete: isCompleted,
   });
 }
 
-async function getTasksFromDB(id) {
-  return await sendPostRequest("tasks", { user_id: id });
+async function getTasksFromDB(token) {
+  return await sendPostRequest("tasks", { accessToken: token });
 }
 
 module.exports = {

@@ -4,10 +4,11 @@ import {
   deleteTask,
   toggleComplete,
 } from "../../App/utils/DbHelperFunctions";
+import { VscTrash, VscEdit } from "react-icons/vsc";
 
 const TasksList = (props) => {
   async function delTask(id, setTasks) {
-    const tasksObj = await deleteTask(id, props.userId);
+    const tasksObj = await deleteTask(id, props.accessToken);
     const tasksArr = tasksObj.tasks;
     if (!tasksArr) {
       setTasks([]);
@@ -37,7 +38,7 @@ const TasksList = (props) => {
   async function handleEditTask(id, tasks, setTasks) {
     edtTask(id, tasks, setTasks);
     const task = tasks.find((el) => el.task_id === id).task_text;
-    const tasksObj = await editTask(id, task, props.userId);
+    const tasksObj = await editTask(id, task, props.accessToken);
     const tasksArr = tasksObj.tasks;
     tasksArr.forEach((el) => {
       el.isEditing = false;
@@ -45,8 +46,8 @@ const TasksList = (props) => {
     setTasks(tasksArr);
   }
 
-  async function toggleCompleted(id, is_complete, setTasks) {
-    const tasksObj = await toggleComplete(id, is_complete, props.userId);
+  async function toggleCompleted(id, isComplete, setTasks) {
+    const tasksObj = await toggleComplete(id, isComplete, props.accessToken);
     const tasksArr = tasksObj.tasks;
     tasksArr.forEach((el) => {
       el.isEditing = false;
@@ -55,73 +56,85 @@ const TasksList = (props) => {
   }
 
   return (
-    <ul>
-      {props.tasks.map((task) => (
-        <li
-          key={task.task_id}
-          style={task.is_complete ? { opacity: 0.4 } : { opacity: 1 }}
-        >
-          <form
-            className={
-              props.tasks.find((tsk) => tsk.task_id === task.task_id).isEditing
-                ? ""
-                : "hidden"
-            }
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleEditTask(task.task_id, props.tasks, props.setTasks);
-            }}
+    <div className="container">
+      <ul>
+        {props.tasks.map((task) => (
+          <li
+            key={task.task_id}
+            style={task.is_complete ? { opacity: 0.4 } : { opacity: 1 }}
           >
             <input
-              type="text"
-              placeholder="Enter your task"
-              value={
-                props.tasks.find((el) => el.task_id === task.task_id).task_text
+              className="checkbox"
+              type="checkbox"
+              defaultChecked={task.is_complete ? true : false}
+              disabled={
+                props.tasks.find((tsk) => tsk.task_id === task.task_id)
+                  .isEditing
               }
-              onChange={(e) =>
-                editTaskInput(e, task.task_id, props.tasks, props.setTasks)
+              onClick={() =>
+                toggleCompleted(task.task_id, task.is_complete, props.setTasks)
               }
             />
-            <button>Update Task</button>
-          </form>
-          <p
-            className={
-              props.tasks.find((tsk) => tsk.task_id === task.task_id).isEditing
-                ? "hidden"
-                : ""
-            }
-          >
-            {task.task_text}
-          </p>
-          <button
-            disabled={
-              props.tasks.find((tsk) => tsk.task_id === task.task_id).isEditing
-            }
-            onClick={() =>
-              toggleCompleted(task.task_id, task.is_complete, props.setTasks)
-            }
-          >
-            {task.is_complete ? "Completed" : "Incomplete"}
-          </button>
-          <button
-            disabled={
-              props.tasks.find((tsk) => tsk.task_id === task.task_id).isEditing
-            }
-            onClick={() => edtTask(task.task_id, props.tasks, props.setTasks)}
-          >
-            Edit
-          </button>
-          <button
-            disabled={
-              props.tasks.find((tsk) => tsk.task_id === task.task_id).isEditing
-            }
-            onClick={() => delTask(task.task_id, props.setTasks)}
-          >
-            Delete
-          </button>
-        </li>
-      ))}
-    </ul>
+            <form
+              className={
+                props.tasks.find((tsk) => tsk.task_id === task.task_id)
+                  .isEditing
+                  ? "formEditTask"
+                  : "formEditTask hidden"
+              }
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleEditTask(task.task_id, props.tasks, props.setTasks);
+              }}
+            >
+              <input
+                type="text"
+                value={
+                  props.tasks.find((el) => el.task_id === task.task_id)
+                    .task_text
+                }
+                onChange={(e) =>
+                  editTaskInput(e, task.task_id, props.tasks, props.setTasks)
+                }
+              />
+              <button>Update</button>
+            </form>
+            <p
+              className={
+                props.tasks.find((tsk) => tsk.task_id === task.task_id)
+                  .isEditing
+                  ? "task hidden"
+                  : "task"
+              }
+            >
+              {task.task_text}
+            </p>
+            <div className="editdel">
+              <VscEdit
+                size={28}
+                className="edit"
+                onClick={() =>
+                  props.tasks.find((tsk) => tsk.task_id === task.task_id)
+                    .isEditing
+                    ? ""
+                    : edtTask(task.task_id, props.tasks, props.setTasks)
+                }
+              />
+              <VscTrash
+                size={28}
+                className="delete"
+                onClick={() =>
+                  props.tasks.find((tsk) => tsk.task_id === task.task_id)
+                    .isEditing
+                    ? ""
+                    : delTask(task.task_id, props.setTasks)
+                }
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

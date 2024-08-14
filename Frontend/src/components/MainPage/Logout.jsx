@@ -11,7 +11,9 @@ const Logout = ({ deleteToken }) => {
 
   return (
     <>
-      <button onClick={logout}>Log out</button>
+      <button className="logout" onClick={logout}>
+        Log out
+      </button>
     </>
   );
 };

@@ -1,3 +1,131 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  background-color: blueviolet;
+  color: #e6e6fa;
+}
+
+div.container {
+  width: 1000px;
+}
+
+.formAddTask {
+  margin-top: 100px;
+  display: flex;
+}
+
+.formAddTask input {
+  padding-left: 20px;
+  width: 100%;
+}
+
+.formAddTask button {
+  margin-left: auto;
+  padding: 0 10px;
+}
+
+ul {
+  padding: 0;
+  margin-top: 50px;
+  list-style-type: none;
+}
+
+li {
+  background: rgba(44, 44, 44, 0.4);
+  font-size: 18px;
+  display: flex;
+  margin-bottom: 5px;
+}
+
+input {
+  padding: 10px 0;
+  font-size: 18px;
+  background-color: rgba(44, 44, 44, 0.4);
+  color: #e6e6fa;
+}
+
+.login-wrapper {
+  background-color: rgba(44, 44, 44, 0.4);
+  margin-top: 120px;
+  padding: 20px 30px;
+  border-radius: 20px;
+}
+
+.label {
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
+.have-account {
+  margin-top: 50px;
+}
+
+.have-account a {
+  color: #afeeee;
+}
+
+.have-account a:visited {
+  color: #6495ed;
+}
+
+.formEditTask {
+  display: flex;
+  margin-left: 30px;
+}
+
+.formEditTask input {
+  width: 700px;
+}
+
+.formEditTask button {
+  width: 70px;
+}
+
+.editdel {
+  display: flex;
+  margin-left: auto;
+}
+
+.delete {
+  margin-left: auto;
+  margin-right: 10px;
+  height: 100%;
+}
+
+.edit {
+  height: 100%;
+  margin-right: 10px;
+}
+
+.checkbox {
+  width: 15px;
+  margin-left: 30px;
+}
+
+.addtask {
+  width: 700px;
+}
+
+.task {
+  margin-left: 30px;
+}
+
 .hidden {
   display: none;
+}
+
+.logout {
+  position: fixed;
+  top: 2%;
+  right: 2%;
+  padding: 5px 15px;
+}
+
+button {
+  border-radius: 5px;
+  background-color: #e6e6fa;
 }

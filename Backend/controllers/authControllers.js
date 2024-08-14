@@ -29,10 +29,10 @@ async function register(req, res) {
     const userAlreadyExists = await checkRecordExists("users", "email", email);
     if (userAlreadyExists) {
       res.status(409).json({ error: "Email already exists" });
-    } else {
-      await insertRecord("users", user);
-      res.status(201).json({ message: "User created successfully!" });
+      return;
     }
+    await insertRecord("users", user);
+    res.status(201).json({ message: "User created successfully!" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -50,29 +50,24 @@ async function login(req, res) {
   try {
     const existingUser = await checkRecordExists("users", "email", email);
 
-    if (existingUser) {
-      if (!existingUser.password) {
-        res.status(401).json({ error: "Invalid credentials" });
-        return;
-      }
-
-      const passwordsMatch = await bcrypt.compare(
-        password,
-        existingUser.password
-      );
-
-      if (passwordsMatch) {
-        res.status(200).json({
-          userId: existingUser.userId,
-          email: existingUser.email,
-          access_token: generateAccessToken(existingUser.userId),
-        });
-      } else {
-        res.status(401).json({ error: "Invalid credentials" });
-      }
-    } else {
+    if (!existingUser || !existingUser.password) {
       res.status(401).json({ error: "Invalid credentials" });
+      return;
     }
+
+    const passwordsMatch = await bcrypt.compare(
+      password,
+      existingUser.password
+    );
+
+    if (!passwordsMatch) {
+      res.status(401).json({ error: "Invalid credentials" });
+      return;
+    }
+
+    await res.status(200).json({
+      accessToken: generateAccessToken(existingUser.userId),
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

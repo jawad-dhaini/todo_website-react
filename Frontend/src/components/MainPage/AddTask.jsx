@@ -7,7 +7,7 @@ const AddTask = (props) => {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!inputValue) return;
-    const tasksObj = await addTask(inputValue, props.userId);
+    const tasksObj = await addTask(inputValue, props.accessToken);
     const tasksArr = tasksObj.tasks;
     tasksArr.forEach((el) => {
       el.isEditing = false;
@@ -17,17 +17,17 @@ const AddTask = (props) => {
   }
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
+    <div className="container">
+      <form className="formAddTask" onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Enter your task"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
         />
-        <button>Add Task</button>
+        <button>Add</button>
       </form>
-    </>
+    </div>
   );
 };
 

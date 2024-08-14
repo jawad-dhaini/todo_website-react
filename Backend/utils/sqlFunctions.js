@@ -1,4 +1,4 @@
-const mysql = require("mysql");
+const mysql = require("mysql2/promise");
 const config = require("../db/config");
 const pool = mysql.createPool(config);
 
@@ -14,74 +14,47 @@ const pool = mysql.createPool(config);
 //   });
 // }
 
-function checkRecordExists(tableName, column, value) {
-  return new Promise((resolve, reject) => {
-    const query = `SELECT * FROM ${tableName} WHERE ${column} = ?`;
-
-    pool.query(query, [value], (err, results) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(results.length ? results[0] : null);
-      }
-    });
-  });
+async function executeQuery(sql) {
+  const connection = await pool.getConnection();
+  const [results, fields] = await connection.execute(sql);
+  return results;
 }
 
-function insertRecord(tableName, record) {
-  return new Promise((resolve, reject) => {
-    const query = `INSERT INTO ${tableName} SET ?`;
-
-    pool.query(query, [record], (err, results) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(results);
-      }
-    });
-  });
+async function checkRecordExists(tableName, column, value) {
+  const sql = `SELECT * FROM ${tableName} WHERE ${column} = "${value}"`;
+  const results = await executeQuery(sql);
+  return results[0] ?? null;
 }
 
-function getRecords(tableName, column, value) {
-  return new Promise((resolve, reject) => {
-    const query = `SELECT * FROM ${tableName} WHERE ${column} = ?`;
-
-    pool.query(query, [value], (err, results) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(results.length ? results : null);
-      }
-    });
-  });
+async function insertRecord(tableName, record) {
+  const sql = `INSERT INTO ${tableName} (task_text, user_id, is_complete) VALUES ("${record.task_text}", "${record.user_id}", 0)`;
+  await executeQuery(sql);
 }
 
-function deleteRecord(tableName, column, value) {
-  return new Promise((resolve, reject) => {
-    const query = `DELETE FROM ${tableName} WHERE ${column} = ?`;
-
-    pool.query(query, [value], (err, results) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(results.length ? results : null);
-      }
-    });
-  });
+async function getRecords(tableName, column, value) {
+  const sql = `SELECT * FROM ${tableName} WHERE ${column} = "${value}"`;
+  const results = await executeQuery(sql);
+  return results ?? null;
 }
 
-function editRecord(tableName, column_to_update, column_filter, values) {
-  return new Promise((resolve, reject) => {
-    const query = `UPDATE ${tableName} SET ${column_to_update} = ? WHERE ${column_filter} = ?`;
+async function deleteRecord(tableName, column, value) {
+  const sql = `DELETE FROM ${tableName} WHERE ${column} = "${value}"`;
+  await executeQuery(sql);
+}
 
-    pool.query(query, values, (err, results) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(results.length ? results : null);
-      }
-    });
-  });
+async function editRecord(tableName, column_to_update, column_filter, values) {
+  const sql = `UPDATE ${tableName} SET ${column_to_update} = "${values[0]}" WHERE ${column_filter} = ${values[1]}`;
+  await executeQuery(sql);
+}
+
+async function toggleRecord(
+  tableName,
+  column_to_update,
+  column_filter,
+  values
+) {
+  const sql = `UPDATE ${tableName} SET ${column_to_update} = ${values[0]} WHERE ${column_filter} = ${values[1]}`;
+  await executeQuery(sql);
 }
 
 module.exports = {
@@ -91,4 +64,5 @@ module.exports = {
   getRecords,
   deleteRecord,
   editRecord,
+  toggleRecord,
 };

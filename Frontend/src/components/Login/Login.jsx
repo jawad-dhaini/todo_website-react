@@ -41,19 +41,19 @@ const Login = ({ setToken }) => {
       <h1>Log In</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          <p>Email</p>
+          <p className="label">Email</p>
           <input
             type="text"
-            placeholder="email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
         <label>
-          <p>Password</p>
+          <p className="label">Password</p>
           <input
             type="password"
-            placeholder="password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -62,7 +62,7 @@ const Login = ({ setToken }) => {
           <button type="submit">Submit</button>
         </div>
       </form>
-      <p>
+      <p className="have-account">
         Don't have an account? <a href="/register">Sign up now!</a>
       </p>
     </div>

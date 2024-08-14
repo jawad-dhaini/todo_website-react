@@ -47,24 +47,24 @@ const Register = () => {
     <div className="login-wrapper">
       <h1>Register</h1>
       <form onSubmit={handleSubmit}>
-        <p>Email</p>
+        <p className="label">Email</p>
         <input
           type="text"
-          placeholder="email"
+          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />{" "}
-        <p>Password</p>
+        <p className="label">Password</p>
         <input
           type="password"
-          placeholder="password"
+          placeholder="Eassword"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <p>Confirm Password</p>
+        <p className="label">Confirm Password</p>
         <input
           type="password"
-          placeholder="confirm password"
+          placeholder="Confirm password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
         />
@@ -72,7 +72,7 @@ const Register = () => {
           <button type="submit">Submit</button>
         </div>
       </form>
-      <p>
+      <p className="have-account">
         Already have an account? <a href="/login">Login now!</a>
       </p>
     </div>

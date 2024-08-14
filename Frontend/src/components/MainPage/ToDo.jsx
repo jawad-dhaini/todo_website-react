@@ -6,13 +6,13 @@ import "./Tasks.css";
 import { getTasksFromDB } from "../../App/utils/DbHelperFunctions";
 
 const ToDo = ({ deleteToken }) => {
-  const userId = JSON.parse(localStorage.getItem("token")).userId;
+  const accessToken = JSON.parse(localStorage.getItem("token")).accessToken;
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
     async function initPage() {
       try {
-        const tasksObj = await getTasksFromDB(userId);
+        const tasksObj = await getTasksFromDB(accessToken);
         const tasksArr = tasksObj.tasks;
         if (!tasksArr) return;
         tasksArr.forEach((el) => {
@@ -24,12 +24,12 @@ const ToDo = ({ deleteToken }) => {
       }
     }
     initPage();
-  }, [userId]);
+  }, [accessToken]);
 
   return (
     <>
-      <AddTask setTasks={setTasks} userId={userId} />
-      <TasksList tasks={tasks} setTasks={setTasks} userId={userId} />
+      <AddTask setTasks={setTasks} accessToken={accessToken} />
+      <TasksList tasks={tasks} setTasks={setTasks} accessToken={accessToken} />
       <Logout deleteToken={deleteToken} />
     </>
   );
