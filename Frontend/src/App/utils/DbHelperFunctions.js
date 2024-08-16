@@ -44,6 +44,13 @@ async function toggleComplete(id, isCompleted, token) {
   });
 }
 
+async function toggleAllComplete(isComplete, token) {
+  return await sendPostRequest("toggleallcomplete", {
+    accessToken: token,
+    isComplete: isComplete,
+  });
+}
+
 async function getTasksFromDB(token) {
   return await sendPostRequest("tasks", { accessToken: token });
 }
@@ -54,4 +61,5 @@ module.exports = {
   getTasksFromDB,
   deleteTask,
   toggleComplete,
+  toggleAllComplete,
 };

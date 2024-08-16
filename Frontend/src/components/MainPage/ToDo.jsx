@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Logout from "./Logout";
 import AddTask from "./AddTask";
 import TasksList from "./TasksList";
-import "./Tasks.css";
+import "../../Styles/styles.css";
 import { getTasksFromDB } from "../../App/utils/DbHelperFunctions";
 
 const ToDo = ({ deleteToken }) => {

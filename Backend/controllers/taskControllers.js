@@ -7,6 +7,7 @@ const {
   deleteRecord,
   editRecord,
   toggleRecord,
+  toggleAllRecords,
 } = require("../utils/sqlFunctions");
 
 function getUserIdFromAccessToken(accessToken) {
@@ -83,10 +84,28 @@ async function toggleComplete(req, res) {
   }
 }
 
+async function toggleAllComplete(req, res) {
+  try {
+    const { accessToken, isComplete } = req.body;
+    const userId = await getUserIdFromAccessToken(accessToken);
+    await toggleAllRecords("tasks", "is_complete", "user_id", [
+      isComplete,
+      userId,
+    ]);
+    const tasksArr = await getRecords("tasks", "user_id", userId);
+    res.status(200).json({
+      tasks: tasksArr,
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 module.exports = {
   getUserTasks,
   addTask,
   editTask,
   delTask,
   toggleComplete,
+  toggleAllComplete,
 };

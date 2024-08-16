@@ -57,6 +57,16 @@ async function toggleRecord(
   await executeQuery(sql);
 }
 
+async function toggleAllRecords(
+  tableName,
+  column_to_update,
+  column_filter,
+  values
+) {
+  const sql = `UPDATE ${tableName} SET ${column_to_update} = ${values[0]} WHERE ${column_filter} = "${values[1]}"`;
+  await executeQuery(sql);
+}
+
 module.exports = {
   // createTable,
   checkRecordExists,
@@ -65,4 +75,5 @@ module.exports = {
   deleteRecord,
   editRecord,
   toggleRecord,
+  toggleAllRecords,
 };

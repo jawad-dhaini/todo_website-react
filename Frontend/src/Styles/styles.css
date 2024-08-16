@@ -74,15 +74,12 @@ input {
 
 .formEditTask {
   display: flex;
-  margin-left: 30px;
 }
 
-.formEditTask input {
-  width: 700px;
-}
-
-.formEditTask button {
-  width: 70px;
+.inputEditTask {
+  width: 1000px;
+  border: none;
+  height: 57px;
 }
 
 .editdel {

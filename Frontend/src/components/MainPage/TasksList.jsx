@@ -3,60 +3,57 @@ import {
   editTask,
   deleteTask,
   toggleComplete,
+  toggleAllComplete,
 } from "../../App/utils/DbHelperFunctions";
 import { VscTrash, VscEdit } from "react-icons/vsc";
 
 const TasksList = (props) => {
-  async function delTask(id, setTasks) {
-    const tasksObj = await deleteTask(id, props.accessToken);
+  async function taskHandle(...args) {
+    const tasksObj = await args[0](...args.slice(1));
     const tasksArr = tasksObj.tasks;
     if (!tasksArr) {
-      setTasks([]);
+      props.setTasks([]);
       return;
     }
     tasksArr.forEach((el) => {
       el.isEditing = false;
     });
-    setTasks(tasksArr);
+    props.setTasks(tasksArr);
   }
 
-  function edtTask(id, tasks, setTasks) {
+  async function delTask(id) {
+    taskHandle(deleteTask, id, props.accessToken);
+  }
+
+  function toggleIsEditing(id, tasks, bool) {
     const tasksClone = tasks.slice();
-    tasksClone.find((task) => task.task_id === id).isEditing = !tasksClone.find(
-      (task) => task.task_id === id
-    ).isEditing;
-    setTasks(tasksClone);
+    tasksClone.find((task) => task.task_id === id).isEditing = bool;
+    props.setTasks(tasksClone);
   }
 
-  function editTaskInput(e, id, tasks, setTasks) {
-    if (e.target.value === "") return;
-    const tasksClone = tasks.slice();
-    tasksClone.find((task) => task.task_id === id).task_text = e.target.value;
-    setTasks(tasksClone);
+  async function handleEditTask(id, task) {
+    if (task === "") return;
+    taskHandle(editTask, id, task, props.accessToken);
   }
 
-  async function handleEditTask(id, tasks, setTasks) {
-    edtTask(id, tasks, setTasks);
-    const task = tasks.find((el) => el.task_id === id).task_text;
-    const tasksObj = await editTask(id, task, props.accessToken);
-    const tasksArr = tasksObj.tasks;
-    tasksArr.forEach((el) => {
-      el.isEditing = false;
-    });
-    setTasks(tasksArr);
+  async function toggleCompleted(id, isComplete) {
+    taskHandle(toggleComplete, id, isComplete, props.accessToken);
   }
 
-  async function toggleCompleted(id, isComplete, setTasks) {
-    const tasksObj = await toggleComplete(id, isComplete, props.accessToken);
-    const tasksArr = tasksObj.tasks;
-    tasksArr.forEach((el) => {
-      el.isEditing = false;
-    });
-    setTasks(tasksArr);
+  async function toggleAllCompleted(isComplete) {
+    taskHandle(toggleAllComplete, isComplete, props.accessToken);
+    document
+      .querySelectorAll(".checkbox")
+      .forEach((el) => (el.checked = isComplete));
   }
 
   return (
     <div className="container">
+      <button onClick={() => toggleAllCompleted(1)}>Toggle All Complete</button>
+      <button onClick={() => toggleAllCompleted(0)}>
+        Toggle All Incomplete
+      </button>
+
       <ul>
         {props.tasks.map((task) => (
           <li
@@ -64,71 +61,60 @@ const TasksList = (props) => {
             style={task.is_complete ? { opacity: 0.4 } : { opacity: 1 }}
           >
             <input
-              className="checkbox"
+              className={task.isEditing ? "checkbox hidden" : "checkbox"}
               type="checkbox"
               defaultChecked={task.is_complete ? true : false}
-              disabled={
-                props.tasks.find((tsk) => tsk.task_id === task.task_id)
-                  .isEditing
-              }
-              onClick={() =>
-                toggleCompleted(task.task_id, task.is_complete, props.setTasks)
-              }
+              onClick={() => toggleCompleted(task.task_id, task.is_complete)}
             />
             <form
               className={
-                props.tasks.find((tsk) => tsk.task_id === task.task_id)
-                  .isEditing
-                  ? "formEditTask"
-                  : "formEditTask hidden"
+                task.isEditing ? "formEditTask" : "formEditTask hidden"
               }
               onSubmit={(e) => {
                 e.preventDefault();
-                handleEditTask(task.task_id, props.tasks, props.setTasks);
+                handleEditTask(
+                  task.task_id,
+                  e.target.querySelector("input").value
+                );
               }}
             >
               <input
                 type="text"
-                value={
-                  props.tasks.find((el) => el.task_id === task.task_id)
-                    .task_text
-                }
-                onChange={(e) =>
-                  editTaskInput(e, task.task_id, props.tasks, props.setTasks)
-                }
+                className="inputEditTask"
+                ref={(input) => input && input.focus()}
+                defaultValue={task.task_text}
+                onBlur={(e) => {
+                  toggleIsEditing(task.task_id, props.tasks, false);
+                  e.target.value = task.task_text;
+                }}
+                onKeyDown={(e) => {
+                  if (e.code === "Escape") {
+                    toggleIsEditing(task.task_id, props.tasks, false);
+                    e.target.value = task.task_text;
+                  }
+                }}
               />
-              <button>Update</button>
             </form>
             <p
-              className={
-                props.tasks.find((tsk) => tsk.task_id === task.task_id)
-                  .isEditing
-                  ? "task hidden"
-                  : "task"
-              }
+              className={task.isEditing ? "task hidden" : "task"}
+              onDoubleClick={() => {
+                toggleIsEditing(task.task_id, props.tasks, true);
+              }}
             >
               {task.task_text}
             </p>
             <div className="editdel">
               <VscEdit
                 size={28}
-                className="edit"
-                onClick={() =>
-                  props.tasks.find((tsk) => tsk.task_id === task.task_id)
-                    .isEditing
-                    ? ""
-                    : edtTask(task.task_id, props.tasks, props.setTasks)
-                }
+                className={task.isEditing ? "edit hidden" : "edit"}
+                onClick={() => {
+                  toggleIsEditing(task.task_id, props.tasks, true);
+                }}
               />
               <VscTrash
                 size={28}
-                className="delete"
-                onClick={() =>
-                  props.tasks.find((tsk) => tsk.task_id === task.task_id)
-                    .isEditing
-                    ? ""
-                    : delTask(task.task_id, props.setTasks)
-                }
+                className={task.isEditing ? "delete hidden" : "delete"}
+                onClick={() => delTask(task.task_id)}
               />
             </div>
           </li>
