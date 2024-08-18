@@ -14,6 +14,10 @@ async function sendPostRequest(path, body) {
   }
 }
 
+async function getTasksFromDB(token) {
+  return await sendPostRequest("tasks", { accessToken: token });
+}
+
 async function addTask(task, token) {
   return await sendPostRequest("addtask", {
     taskText: task,
@@ -51,8 +55,10 @@ async function toggleAllComplete(isComplete, token) {
   });
 }
 
-async function getTasksFromDB(token) {
-  return await sendPostRequest("tasks", { accessToken: token });
+async function deleteAllTasks(token) {
+  return await sendPostRequest("deletealltasks", {
+    accessToken: token,
+  });
 }
 
 module.exports = {
@@ -60,6 +66,7 @@ module.exports = {
   editTask,
   getTasksFromDB,
   deleteTask,
+  deleteAllTasks,
   toggleComplete,
   toggleAllComplete,
 };

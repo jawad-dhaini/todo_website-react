@@ -5,6 +5,7 @@ const {
   addTask,
   editTask,
   delTask,
+  deleteAllTasks,
   toggleComplete,
   toggleAllComplete,
 } = require("../controllers/taskControllers");
@@ -17,6 +18,7 @@ router.post("/tasks", isAuthorized, getUserTasks);
 router.post("/addtask", isAuthorized, addTask);
 router.post("/edittask", isAuthorized, editTask);
 router.post("/deltask", isAuthorized, delTask);
+router.post("/deletealltasks", isAuthorized, deleteAllTasks);
 router.post("/togglecomplete", isAuthorized, toggleComplete);
 router.post("/toggleallcomplete", isAuthorized, toggleAllComplete);
 

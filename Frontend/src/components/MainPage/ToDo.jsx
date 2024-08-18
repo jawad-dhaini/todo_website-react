@@ -26,10 +26,28 @@ const ToDo = ({ deleteToken }) => {
     initPage();
   }, [accessToken]);
 
+  async function taskHandle(...args) {
+    const tasksObj = await args[0](...args.slice(1));
+    const tasksArr = tasksObj.tasks;
+    if (!tasksArr) {
+      setTasks([]);
+      return;
+    }
+    tasksArr.forEach((el) => {
+      el.isEditing = false;
+    });
+    setTasks(tasksArr);
+  }
+
   return (
     <>
-      <AddTask setTasks={setTasks} accessToken={accessToken} />
-      <TasksList tasks={tasks} setTasks={setTasks} accessToken={accessToken} />
+      <AddTask accessToken={accessToken} taskHandle={taskHandle} />
+      <TasksList
+        tasks={tasks}
+        setTasks={setTasks}
+        accessToken={accessToken}
+        taskHandle={taskHandle}
+      />
       <Logout deleteToken={deleteToken} />
     </>
   );

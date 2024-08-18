@@ -4,15 +4,10 @@ import { addTask } from "../../App/utils/DbHelperFunctions";
 const AddTask = (props) => {
   const [inputValue, setInputValue] = useState("");
 
-  async function handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
-    if (!inputValue) return;
-    const tasksObj = await addTask(inputValue, props.accessToken);
-    const tasksArr = tasksObj.tasks;
-    tasksArr.forEach((el) => {
-      el.isEditing = false;
-    });
-    props.setTasks(tasksArr);
+    if (e.target.querySelector("input").value === "") return;
+    props.taskHandle(addTask, inputValue, props.accessToken);
     setInputValue("");
   }
 

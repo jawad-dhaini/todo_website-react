@@ -2,69 +2,65 @@ import React from "react";
 import {
   editTask,
   deleteTask,
+  deleteAllTasks,
   toggleComplete,
   toggleAllComplete,
 } from "../../App/utils/DbHelperFunctions";
 import { VscTrash, VscEdit } from "react-icons/vsc";
 
 const TasksList = (props) => {
-  async function taskHandle(...args) {
-    const tasksObj = await args[0](...args.slice(1));
-    const tasksArr = tasksObj.tasks;
-    if (!tasksArr) {
-      props.setTasks([]);
-      return;
-    }
-    tasksArr.forEach((el) => {
-      el.isEditing = false;
-    });
-    props.setTasks(tasksArr);
-  }
-
-  async function delTask(id) {
-    taskHandle(deleteTask, id, props.accessToken);
+  function delTask(id) {
+    props.taskHandle(deleteTask, id, props.accessToken);
   }
 
   function toggleIsEditing(id, tasks, bool) {
     const tasksClone = tasks.slice();
-    tasksClone.find((task) => task.task_id === id).isEditing = bool;
+    tasksClone.find((task) => task.taskId === id).isEditing = bool;
     props.setTasks(tasksClone);
   }
 
-  async function handleEditTask(id, task) {
+  function handleEditTask(id, task) {
     if (task === "") return;
-    taskHandle(editTask, id, task, props.accessToken);
+    props.taskHandle(editTask, id, task, props.accessToken);
   }
 
-  async function toggleCompleted(id, isComplete) {
-    taskHandle(toggleComplete, id, isComplete, props.accessToken);
+  function toggleCompleted(id, isComplete) {
+    props.taskHandle(toggleComplete, id, isComplete, props.accessToken);
   }
 
-  async function toggleAllCompleted(isComplete) {
-    taskHandle(toggleAllComplete, isComplete, props.accessToken);
+  function toggleAllCompleted(isComplete) {
+    props.taskHandle(toggleAllComplete, isComplete, props.accessToken);
     document
       .querySelectorAll(".checkbox")
       .forEach((el) => (el.checked = isComplete));
   }
 
+  function delAllTasks() {
+    props.taskHandle(deleteAllTasks, props.accessToken);
+  }
+
   return (
     <div className="container">
-      <button onClick={() => toggleAllCompleted(1)}>Toggle All Complete</button>
+      <button className="btnAllComplete" onClick={() => toggleAllCompleted(1)}>
+        Toggle All Complete
+      </button>
       <button onClick={() => toggleAllCompleted(0)}>
         Toggle All Incomplete
       </button>
+      <button onClick={() => delAllTasks()}>Delete All</button>
 
-      <ul>
+      <ul className="list">
         {props.tasks.map((task) => (
           <li
-            key={task.task_id}
-            style={task.is_complete ? { opacity: 0.4 } : { opacity: 1 }}
+            className="listEl"
+            key={task.taskId}
+            style={task.isComplete ? { opacity: 0.4 } : { opacity: 1 }}
           >
             <input
               className={task.isEditing ? "checkbox hidden" : "checkbox"}
               type="checkbox"
-              defaultChecked={task.is_complete ? true : false}
-              onClick={() => toggleCompleted(task.task_id, task.is_complete)}
+              defaultChecked={task.isComplete ? true : false}
+              onClick={() => toggleCompleted(task.taskId, task.isComplete)}
             />
             <form
               className={
@@ -73,7 +69,7 @@ const TasksList = (props) => {
               onSubmit={(e) => {
                 e.preventDefault();
                 handleEditTask(
-                  task.task_id,
+                  task.taskId,
                   e.target.querySelector("input").value
                 );
               }}
@@ -82,15 +78,15 @@ const TasksList = (props) => {
                 type="text"
                 className="inputEditTask"
                 ref={(input) => input && input.focus()}
-                defaultValue={task.task_text}
+                defaultValue={task.taskText}
                 onBlur={(e) => {
-                  toggleIsEditing(task.task_id, props.tasks, false);
-                  e.target.value = task.task_text;
+                  toggleIsEditing(task.taskId, props.tasks, false);
+                  e.target.value = task.taskText;
                 }}
                 onKeyDown={(e) => {
                   if (e.code === "Escape") {
-                    toggleIsEditing(task.task_id, props.tasks, false);
-                    e.target.value = task.task_text;
+                    toggleIsEditing(task.taskId, props.tasks, false);
+                    e.target.value = task.taskText;
                   }
                 }}
               />
@@ -98,23 +94,23 @@ const TasksList = (props) => {
             <p
               className={task.isEditing ? "task hidden" : "task"}
               onDoubleClick={() => {
-                toggleIsEditing(task.task_id, props.tasks, true);
+                toggleIsEditing(task.taskId, props.tasks, true);
               }}
             >
-              {task.task_text}
+              {task.taskText}
             </p>
             <div className="editdel">
               <VscEdit
                 size={28}
                 className={task.isEditing ? "edit hidden" : "edit"}
                 onClick={() => {
-                  toggleIsEditing(task.task_id, props.tasks, true);
+                  toggleIsEditing(task.taskId, props.tasks, true);
                 }}
               />
               <VscTrash
                 size={28}
                 className={task.isEditing ? "delete hidden" : "delete"}
-                onClick={() => delTask(task.task_id)}
+                onClick={() => delTask(task.taskId)}
               />
             </div>
           </li>

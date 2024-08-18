@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, BrowserRouter, Routes } from "react-router-dom";
-import "./App.css";
+import "../Styles/styles.css";
 import ToDo from "../components/MainPage/ToDo";
 import Login from "../components/Login/Login";
 import useToken from "./useToken";
